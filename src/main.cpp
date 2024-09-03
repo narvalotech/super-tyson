@@ -1,7 +1,10 @@
 #include <iostream>
 
-auto main(int argc, char *argv[]) -> int {
-    std::cout << "Hello, World! " << std::endl;
+auto main() -> int {
+    std::string input;
+    std::getline(std::cin, input);
+
+    std::cout << "Read: " << input << std::endl;
 
     return 0;
 }
