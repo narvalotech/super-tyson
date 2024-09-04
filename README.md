@@ -11,10 +11,10 @@ Also ulisp is lacking a small IDE, something like micropython's [Thonny](https:/
 
 ``` sh
 # configure
-cmake -Bbuild -S.
+cmake -GNinja -Bbuild -S.
 
 # build
-cmake --build build
+ninja -C build
 
 # run
 ./build/SuperTyson

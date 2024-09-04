@@ -2,12 +2,13 @@
 
 pkgs.mkShell {
   buildInputs = [
-    # C++ compiler (GCC or Clang)
+    # C++ compilers
     pkgs.gcc
     pkgs.clang
 
-    # CMake
+    # Build tools
     pkgs.cmake
+    pkgs.ninja
 
     # Other useful tools
     pkgs.gdb
