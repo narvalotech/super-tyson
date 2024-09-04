@@ -23,4 +23,3 @@ uLisp 4.5
 # next steps
 
 - class to read ulisp prompt, extract avail cells
-- class to read s-exp
