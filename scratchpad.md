@@ -15,6 +15,8 @@ example interaction (over serial):
 uLisp 4.5
 12927> (+ (* 3 4) 2.5)
 14.5
+"some text-with
+newlines"
 
 12927>
 --- exit ---
