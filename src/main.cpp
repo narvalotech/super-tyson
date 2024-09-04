@@ -6,8 +6,7 @@ class Sexp {
 
         friend auto operator>>(std::istream& is, Sexp& obj) -> std::istream&;
 
-        auto get() -> std::string
-            const { return exp; }
+        auto get() const -> std::string const { return exp; }
 
     private:
         // since we're not building an interpreter we don't actually need to
@@ -15,6 +14,10 @@ class Sexp {
         // enough for passing to the target interpreter.
         std::string exp;
 };
+
+auto operator<<(std::ostream& os, const Sexp& obj) -> std::ostream& {
+    return os << obj.get();
+}
 
 auto operator>>(std::istream& stream, Sexp& obj) -> std::istream& {
     // TODO: allow (and strip+keep) inline comments
@@ -52,7 +55,7 @@ auto main() -> int {
     Sexp exp;
     std::cin >> exp;
 
-    std::cout << "Read: " << exp.get() << std::endl;
+    std::cout << "Read: " << exp << std::endl;
 
     return 0;
 }
