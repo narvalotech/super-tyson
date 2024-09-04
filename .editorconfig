@@ -11,4 +11,4 @@ trim_trailing_whitespace = true
 
 [*.{cpp,hpp}]
 indent_style = space
-indent_size = 4
+indent_size = 2
