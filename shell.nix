@@ -13,6 +13,7 @@ pkgs.mkShell {
     pkgs.gdb
     pkgs.valgrind
     pkgs.clang-tools
+    pkgs.ccache
   ];
 
   # Shell hook to set up environment
