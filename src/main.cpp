@@ -92,13 +92,13 @@ private:
     ~LinuxSerialPort() { close(fd); }
 
     auto send(const std::string_view view) -> int {
-      this->send_c_str(view.data(), view.length());
+      send_c_str(view.data(), view.length());
 
       return 0;
     }
 
     auto getc(char& c) -> int {
-      if (!this->wait_for_data()) {
+      if (!wait_for_data()) {
         // The wait timed-out, we won't read anything
         return 0;
       }
@@ -147,7 +147,7 @@ private:
     }
 
     int receive_c_str(char* buffer, size_t max_size) {
-      this->wait_for_data();
+      wait_for_data();
 
       // LOGN("read");
       ssize_t bytes_read = read(fd, buffer, max_size - 1);
