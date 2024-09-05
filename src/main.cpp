@@ -101,13 +101,13 @@ private:
       return micros.count();
     }
 
-    auto null_route() -> void {
-      this->wait_for_data();
+    auto null_route(int time_ms) -> void {
+      // Discard data for a given duration
 
-      // flush for 100ms
-      auto end = current_time() + 400'000;
+      auto end = current_time() + (time_ms * 1000);
       while (current_time() < end) {
         char c;
+        this->wait_for_data();
         ssize_t bytes_read = read(fd, &c, 1);
       }
     }
@@ -232,7 +232,7 @@ auto disable_ulisp_echo(SerialPort& serial) -> void {
   serial.send(noecho);
 
   // flush serial buffer
-  serial.null_route();
+  serial.null_route(100);
 }
 
 auto main(int argc, char* argv[]) -> int {
