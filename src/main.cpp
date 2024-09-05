@@ -79,6 +79,7 @@ auto read_result(F read_line) -> std::string {
     // will never be shown.
 
     result += line + '\n';
+    line = "";
   }
 
   // std::cerr << std::endl;
