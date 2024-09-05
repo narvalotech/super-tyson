@@ -80,6 +80,15 @@ auto read_result(F read_line) -> std::string {
     line = "";
   }
 
+  // Remove whitespace around result
+  while (std::isspace(result.front())) {
+    result.erase(0, 1);
+  }
+
+  // Remove whitespace around result
+  while (std::isspace(result.back())) {
+    result.pop_back();
+  }
 
   return result;
 }
