@@ -34,7 +34,18 @@ auto serial_read_line(SerialPort& serial, std::string& line) -> bool {
     }
   }
 
-  // LOGN("line: " << line);
+  return true;
+}
+
+auto stream_read_line(std::istream& is, std::string& line) -> bool {
+  // Poll for input
+  // TODO: add a timeout or sprinkle some async
+  // and use `return false`
+  is >> std::noskipws;  // Don't skip whitespace
+
+  while (!getline(is, line)) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 
   return true;
 }
@@ -51,19 +62,6 @@ auto no_trail_whitespace(std::string& str) -> std::string_view {
 
 auto is_prompt(std::string line) -> bool {
   return (no_trail_whitespace(line).back() == '>');
-}
-
-auto stream_read_line(std::istream& is, std::string& line) -> bool {
-  // Poll for input
-  // TODO: add a timeout or sprinkle some async
-  // and use `return false`
-  is >> std::noskipws;  // Don't skip whitespace
-
-  while (!getline(is, line)) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  }
-
-  return true;
 }
 
 template<typename F>
