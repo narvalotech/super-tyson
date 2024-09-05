@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <cassert>
 #include <thread>
 #include <chrono>
@@ -54,7 +55,8 @@ auto main(int argc, char* argv[]) -> int {
   assert(uartstream.is_open());
 
   Sexp exp;
-  std::cin >> exp;
+  std::stringstream is("(+ 1 2 (* 3 4))");
+  is >> exp;
 
   std::cerr << "Eval: " << exp << std::endl;
   // "send" s-exp to target
