@@ -8,10 +8,12 @@
 
 auto is_prompt(std::string line) -> bool { return (line.back() == '>'); }
 
-auto read_line(std::istream& is, std::string& line) -> bool {
+auto stream_read_line(std::istream& is, std::string& line) -> bool {
   // Poll for input
   // TODO: add a timeout or sprinkle some async
   // and use `return false`
+  is >> std::noskipws;  // Don't skip whitespace
+
   while (!getline(is, line)) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
@@ -19,16 +21,15 @@ auto read_line(std::istream& is, std::string& line) -> bool {
   return true;
 }
 
-auto read_result(std::istream& is) -> std::string {
+template<typename F>
+auto read_result(F read_line) -> std::string {
   // Read the result of the computation, until the lisp prompt
   // We can optionally track the memory consumption from the prompt
   char c;
   std::string result;
   std::string line;
 
-  is >> std::noskipws;  // Don't skip whitespace
-
-  while (read_line(is, line) && !is_prompt(line)) {
+  while (read_line(line) && !is_prompt(line)) {
     // do we need to give up after some time? e.g. if s-exp is bad, the prompt
     // will never be shown.
     // std::cerr << "[" << line << "]";
@@ -61,7 +62,8 @@ auto main(int argc, char* argv[]) -> int {
   std::cout << exp << std::endl;
 
   // read and log result
-  std::string result = read_result(uartstream);
+  std::string result = read_result(
+      [&uartstream](std::string& line) -> bool { return stream_read_line(uartstream, line); });
   std::cerr << "Result: " << result;
 
   return 0;
