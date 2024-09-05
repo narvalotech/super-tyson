@@ -80,7 +80,6 @@ auto read_result(F read_line) -> std::string {
     line = "";
   }
 
-  // std::cerr << std::endl;
 
   return result;
 }
