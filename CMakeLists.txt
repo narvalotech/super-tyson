@@ -18,6 +18,7 @@ project(SuperTyson VERSION 1.0 LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/target.cpp
     src/serial/linux.cpp
     src/sexp.cpp)
 
