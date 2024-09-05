@@ -10,3 +10,4 @@ ninja -Cbuild
 # gdb --args ./build/SuperTyson "/tmp/ttyV0"
 # echo "(+ 1 2 (* 3 4))" | ./build/SuperTyson "/dev/ttyACM0"
 echo "(+ 1 2 (* 3 4))" | ./build/SuperTyson "/tmp/ttyV0"
+echo '(format nil "A ~%multi~%  line string")' | ./build/SuperTyson "/tmp/ttyV0"
