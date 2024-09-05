@@ -130,6 +130,7 @@ auto main(int argc, char* argv[]) -> int {
       [&serial_port](std::string& line) -> bool { return serial_read_line(serial_port, line); });
 
   std::cerr << "Result: {" << result << "}";
+  std::cout << result;
 
   return 0;
 }
