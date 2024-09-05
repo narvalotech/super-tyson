@@ -1,8 +1,7 @@
 #include <errno.h>
 #include <fcntl.h>
-/* TODO: move under st/serial.h */
-#include <linuxserial.h>
-#include <serial.h>
+#include <st/linuxserial.h>
+#include <st/serial.h>
 #include <termios.h>
 #include <unistd.h>
 

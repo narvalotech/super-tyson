@@ -1,6 +1,6 @@
-#include <sexp.h>
-#include <serial.h>
-#include <linuxserial.h>
+#include <st/sexp.h>
+#include <st/serial.h>
+#include <st/linuxserial.h>
 
 #include <iostream>
 #include <fstream>

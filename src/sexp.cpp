@@ -1,4 +1,4 @@
-#include <sexp.h>
+#include <st/sexp.h>
 #include <iostream>
 
 auto operator<<(std::ostream& os, const Sexp& obj) -> std::ostream& { return os << obj.get(); }

@@ -1,7 +1,7 @@
 #ifndef LINUXSERIAL_H_
 #define LINUXSERIAL_H_
 
-#include <serial.h>
+#include <st/serial.h>
 #include <unistd.h>
 
 class LinuxSerialPort : public SerialPort {
