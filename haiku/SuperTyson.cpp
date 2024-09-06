@@ -19,8 +19,12 @@
 #include <TextView.h>
 #include <TranslationUtils.h>
 #include <Window.h>
+#include <st/linuxserial.h>
+#include <st/sexp.h>
+#include <st/target.h>
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <string_view>
 
@@ -45,6 +49,8 @@ private:
   BFilePanel *fOpenPanel, *fSavePanel;
   BString fFilePath;
   char fEvalBuf[MAX_TEXT_LENGTH]{};
+  LispTarget *fTarget;
+  LinuxSerialPort *fSerial;
 };
 
 enum STEvents {
@@ -138,6 +144,14 @@ MainWindow::MainWindow(void)
 
   // Adjust window size to fit content
   ResizeToPreferred();
+
+  // FIXME: find a better place for this
+  std::string uart_path = "/dev/ports/usb0";
+  fSerial = new LinuxSerialPort(uart_path.c_str(), 115200, false);
+
+  // maybe change the API to allow a pointer too
+  LinuxSerialPort &serial = *fSerial;
+  fTarget = new LispTarget(serial);
 }
 
 MainWindow::~MainWindow(void) {
@@ -147,7 +161,16 @@ MainWindow::~MainWindow(void) {
 }
 
 // TODO: connect stub to actual evaluator
-auto evaluate(std::string_view &contents) -> std::string { return std::string(contents); }
+auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
+  Sexp exp;
+  // Welp, that's ugly AF
+  std::string copy(contents);
+  std::stringstream is(copy);
+  is >> exp;
+  std::string result = target->evaluate(exp.get());
+
+  return result;
+}
 
 void MainWindow::MessageReceived(BMessage *msg) {
   switch (msg->what) {
@@ -206,8 +229,8 @@ void MainWindow::MessageReceived(BMessage *msg) {
 
       std::string_view view(fEvalBuf);
 
-      std::string result = evaluate(view);
-      std::cout << evaluate(view) << std::endl;
+      std::string result = evaluate(view, fTarget);
+      std::cout << result << std::endl;
 
       std::string separator{};
       separator += '\n';
