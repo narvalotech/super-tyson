@@ -93,8 +93,13 @@ auto LinuxSerialPort::_init(const char* device_path, unsigned int baud_rate, boo
     throw std::runtime_error("Failed to get terminal attributes");
   }
 
-  cfsetispeed(&tty, baud_rate);
-  cfsetospeed(&tty, baud_rate);
+  // FIXME: stop hardcoding the baudrate
+  if (baud_rate == 115200) {
+    cfsetispeed(&tty, B115200);
+    cfsetospeed(&tty, B115200);
+  } else {
+    throw std::runtime_error("Any color you want, as long as it's 115200bps");
+  }
 
   tty.c_cflag &= ~PARENB;
   tty.c_cflag &= ~CSTOPB;
