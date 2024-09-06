@@ -1,3 +1,10 @@
+# Disclaimer
+
+The repo is used for "working in public".
+The project itself is not yet usable, but feel free to browse the oft-changing code.
+
+I will remove this disclaimer when the GUI MVP milestone (below) is done.
+
 # What
 
 Super-Tyson (ST) is a micro-ide for [micro lisp](http://www.ulisp.com/).
