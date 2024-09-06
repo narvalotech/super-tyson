@@ -102,6 +102,8 @@ MainWindow::MainWindow(void)
   //
   // By default the "open" panel will send a B_REFS_RECEIVED message and the
   // "save" panel a B_SAVE_REQUESTED message.
+  //
+  // TODO: add a filter for *.lisp files
   BMessenger msgr(NULL, this);
   fOpenPanel = new BFilePanel(B_OPEN_PANEL, &msgr, NULL, B_FILE_NODE, false);
   fSavePanel = new BFilePanel(B_SAVE_PANEL, &msgr, NULL, B_FILE_NODE, false);
