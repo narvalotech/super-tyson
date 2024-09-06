@@ -19,9 +19,15 @@ uLisp 4.5
 newlines"
 
 12927>
+
 --- exit ---
 ```
 
 # next steps
 
-- class to read ulisp prompt, extract avail cells
+GUI
+
+- add serial port selector widget
+- add "Run selection" button
+- highlight matching parens
+- allow evaluating more than 1 s-exp
