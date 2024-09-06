@@ -44,9 +44,9 @@ Use a "server" architecture, where the server connects to the target and does
 the comms and parsing. GUI should just present the data.
 
 - [ ] serial connection dialog / bar
-- [ ] editor window
-- [ ] REPL window/terminal
-- [ ] send editor contents button
+- [x] editor window
+- [x] REPL window/terminal
+- [x] send editor contents button
 
 ## Extra features
 
