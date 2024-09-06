@@ -49,8 +49,8 @@ private:
   BFilePanel *fOpenPanel, *fSavePanel;
   BString fFilePath;
   char fEvalBuf[MAX_TEXT_LENGTH]{};
-  LispTarget *fTarget;
-  LinuxSerialPort *fSerial;
+  LispTarget *fTarget{};
+  LinuxSerialPort *fSerial{};
   bool savingOutput{};
 };
 
@@ -60,6 +60,7 @@ enum STEvents {
   M_SAVE = 'save',
   M_SAVE_AS = 'svas',
   M_SAVE_OUTPUT = 'svot',
+  M_CONNECT = 'conn',
   M_RUN = 'runb'
 };
 
@@ -112,11 +113,13 @@ MainWindow::MainWindow(void)
 
   // FIXME: add a proper icon
   BButton *runButton = new BButton("run", "Run file", new BMessage(M_RUN));
+  BButton *connectButton = new BButton("connect", "Connect serial port", new BMessage(M_CONNECT));
+  BGridLayout *buttons = BLayoutBuilder::Grid<>().Add(runButton, 0, 0).Add(connectButton, 1, 0);
 
   // Build the final layout for the app window
   BLayoutBuilder::Group<>(this, B_VERTICAL)
       .Add(fMenuBar)
-      .Add(runButton)
+      .Add(buttons)
       .Add(splitview)
       .SetInsets(0, 0, 0, 0)  // necessary for menu bar to stick to top of window
       .End();
@@ -149,32 +152,28 @@ MainWindow::MainWindow(void)
 
   // Adjust window size to fit content
   ResizeToPreferred();
-
-  // FIXME: find a better place for this
-  std::string uart_path = "/dev/ports/usb0";
-  fSerial = new LinuxSerialPort(uart_path.c_str(), 115200, false);
-
-  // maybe change the API to allow a pointer too
-  LinuxSerialPort &serial = *fSerial;
-  fTarget = new LispTarget(serial);
 }
 
 MainWindow::~MainWindow(void) {
-  // TODO: could we just use RAII for those two?
+  // TODO: could we just use RAII for those?
   delete fOpenPanel;
   delete fSavePanel;
 }
 
 // TODO: connect stub to actual evaluator
 auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
-  Sexp exp;
   // Welp, that's ugly AF
   std::string copy(contents);
-  std::stringstream is(copy);
-  is >> exp;
-  std::string result = target->evaluate(exp.get());
 
-  return result;
+  if (target == nullptr) {
+    return "not connected to board.";
+  }
+
+  std::stringstream is(copy);
+  Sexp exp;
+  is >> exp;
+
+  return target->evaluate(exp.get());
 }
 
 void MainWindow::MessageReceived(BMessage *msg) {
@@ -230,6 +229,25 @@ void MainWindow::MessageReceived(BMessage *msg) {
         SaveFile(path.Path(), savingOutput ? fConsoleView : fTextView);
       }
       savingOutput = false;
+      break;
+    }
+
+    case M_CONNECT: {
+      if (fTarget != nullptr) {
+        // We are already connected. Destroy the current target connection
+        // before establishing a new one.
+        delete fTarget;
+        delete fSerial;
+      }
+
+      // FIXME: allow user port/baud/fc selection
+      std::string uart_path = "/dev/ports/usb0";
+      fSerial = new LinuxSerialPort(uart_path.c_str(), 115200, false);
+
+      // maybe change the API to allow a pointer too
+      LinuxSerialPort &serial = *fSerial;
+      fTarget = new LispTarget(serial);
+
       break;
     }
 
