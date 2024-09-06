@@ -267,6 +267,11 @@ void MainWindow::MessageReceived(BMessage *msg) {
       separator += '\n';
       separator += "--------------------------";
       separator += '\n';
+      // TODO: better name for this var
+      // TODO: add option to enable/disable echo
+      separator += fEvalBuf;
+      separator += '\n';
+      separator += "=> ";
 
       result.insert(0, separator);
       fConsoleView->Insert(result.c_str());
