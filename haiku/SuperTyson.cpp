@@ -188,6 +188,9 @@ void MainWindow::OpenFile(const entry_ref &ref) {
   BFile file(&realRef, B_READ_ONLY);
   if (file.InitCheck() != B_OK) return;
 
+  // Clear the text view before reading the new file.
+  fTextView->SetText("");
+
   // Unfortunately, BTranslationUtils has no API documentation. It doesn't seem
   // like there is a method to get and put plain text, so we have to use the
   // "styled" one.
