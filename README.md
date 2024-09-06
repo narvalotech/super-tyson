@@ -24,8 +24,8 @@ ninja -C build
 
 ## CLI MVP
 
-- [ ] connect to device
-- [ ] evaluate s-exp
+- [x] connect to device
+- [x] evaluate s-exp
 - [ ] evaluate "region" (ie multiple s-exp)
 - [ ] evaluate file
 
