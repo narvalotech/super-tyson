@@ -14,16 +14,21 @@ set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API PREFER_SOURCE)
 
 set(CMAKE_BUILD_TYPE Debug)
 
+add_library(target STATIC
+  src/target.cpp
+  src/serial/linux.cpp
+  src/sexp.cpp)
+
+set_target_properties(target PROPERTIES PUBLIC_HEADER
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/st/target.h)
+
+target_include_directories(target PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 project(SuperTyson VERSION 1.0 LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME}
-    src/main.cpp
-    src/target.cpp
-    src/serial/linux.cpp
-    src/sexp.cpp)
+  src/main.cpp)
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(${PROJECT_NAME} PRIVATE target)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "<iostream>")
