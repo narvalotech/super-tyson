@@ -77,7 +77,7 @@ BTextView *createTextView(bool editable) {
 }
 
 MainWindow::MainWindow(void)
-    : BWindow(BRect(100, 100, 500, 500), "SuperTyson", B_TITLED_WINDOW,
+    : BWindow(BRect(100, 100, 600, 500), "SuperTyson", B_TITLED_WINDOW,
               B_AUTO_UPDATE_SIZE_LIMITS | B_ASYNCHRONOUS_CONTROLS) {
   // Create and populate menu bar
   BRect r(Bounds());
@@ -111,10 +111,10 @@ MainWindow::MainWindow(void)
             .Add(new BScrollView("scrollview", fTextView, B_FOLLOW_ALL, 0, false, true), 1.0f)
             .Add(new BScrollView("scrollview", fConsoleView, B_FOLLOW_ALL, 0, false, true), 1.0f);
 
-  // FIXME: add a proper icon
+  // TODO: add a proper icon
   BButton *runButton = new BButton("run", "Run file", new BMessage(M_RUN));
   BButton *connectButton = new BButton("connect", "Connect serial port", new BMessage(M_CONNECT));
-  BGridLayout *buttons = BLayoutBuilder::Grid<>().Add(runButton, 0, 0).Add(connectButton, 1, 0);
+  BGroupLayout *buttons = BLayoutBuilder::Group<>(B_HORIZONTAL).Add(runButton).Add(connectButton);
 
   // Build the final layout for the app window
   BLayoutBuilder::Group<>(this, B_VERTICAL)
@@ -123,6 +123,20 @@ MainWindow::MainWindow(void)
       .Add(splitview)
       .SetInsets(0, 0, 0, 0)  // necessary for menu bar to stick to top of window
       .End();
+
+  // Focus the text view on application start.
+  fTextView->MakeFocus(true);
+
+  // Adjust window size to fit content
+  ResizeToPreferred();
+
+  // Calculate minimum size
+  BSize minSize = GetLayout()->MinSize();
+
+  // Set minimum size constraints
+  SetSizeLimits(minSize.width, B_SIZE_UNSET, minSize.height, B_SIZE_UNSET);
+
+  // *End of visible components / window layout*
 
   // BFilePanel shows the file pickers. Once constructed, call the Show() method
   // to enable the use to choose a file.
@@ -140,18 +154,6 @@ MainWindow::MainWindow(void)
   BMessenger msgr(NULL, this);
   fOpenPanel = new BFilePanel(B_OPEN_PANEL, &msgr, NULL, B_FILE_NODE, false);
   fSavePanel = new BFilePanel(B_SAVE_PANEL, &msgr, NULL, B_FILE_NODE, false);
-
-  // Focus the text view on application start.
-  fTextView->MakeFocus(true);
-
-  // Calculate minimum size
-  BSize minSize = GetLayout()->MinSize();
-
-  // Set minimum size constraints
-  SetSizeLimits(minSize.width, B_SIZE_UNSET, minSize.height, B_SIZE_UNSET);
-
-  // Adjust window size to fit content
-  ResizeToPreferred();
 }
 
 MainWindow::~MainWindow(void) {
