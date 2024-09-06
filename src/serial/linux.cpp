@@ -55,7 +55,10 @@ auto LinuxSerialPort::wait_for_data() -> bool {
   tv.tv_usec = 100000;  // 100ms timeout
 
   // LOGN("wait for data");
-  select(fd + 1, &read_fdset, NULL, NULL, &tv);
+  int sr = select(fd + 1, &read_fdset, NULL, NULL, &tv);
+  if (sr < 0) {
+    throw std::runtime_error("Error in select");
+  }
 
   if (!FD_ISSET(fd, &read_fdset)) {
     return false;
