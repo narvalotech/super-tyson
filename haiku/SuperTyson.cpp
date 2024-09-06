@@ -169,11 +169,13 @@ auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
     return "not connected to board.";
   }
 
-  std::stringstream is(copy);
-  Sexp exp;
-  is >> exp;
+  // FIXME: we should be able to evaluate not only s-exps, ie printing literals
+  // or variable values.
+  // std::stringstream is(copy);
+  // Sexp exp;
+  // is >> exp;
 
-  return target->evaluate(exp.get());
+  return target->evaluate(copy);
 }
 
 void MainWindow::MessageReceived(BMessage *msg) {

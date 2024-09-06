@@ -31,3 +31,4 @@ GUI
 - add "Run selection" button
 - highlight matching parens
 - allow evaluating more than 1 s-exp
+- allow evaluating other things than s-exps
