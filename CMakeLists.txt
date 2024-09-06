@@ -32,3 +32,7 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PRIVATE target)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "<iostream>")
+
+if(CMAKE_SYSTEM_NAME MATCHES "Haiku")
+  add_subdirectory(haiku)
+endif()
