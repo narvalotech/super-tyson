@@ -52,8 +52,6 @@ enum STEvents {
   M_SHOW_OPEN = 'shop',
   M_SAVE = 'save',
   M_SAVE_AS = 'svas',
-  M_PRINT_SETUP = 'ptcf',
-  M_PRINT = 'prin',
   M_RUN = 'runb'
 };
 
