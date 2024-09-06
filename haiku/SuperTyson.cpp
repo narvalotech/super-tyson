@@ -1,5 +1,6 @@
 #include <Alert.h>
 #include <Application.h>
+#include <Button.h>
 #include <Directory.h>
 #include <Entry.h>
 #include <File.h>
@@ -19,6 +20,12 @@
 #include <TranslationUtils.h>
 #include <Window.h>
 
+#include <iostream>
+#include <string>
+#include <string_view>
+
+const uint32_t MAX_TEXT_LENGTH{8192};
+
 class MainWindow : public BWindow {
 public:
   MainWindow(void);
@@ -37,6 +44,7 @@ private:
   BTextView *fTextView, *fConsoleView;
   BFilePanel *fOpenPanel, *fSavePanel;
   BString fFilePath;
+  char fEvalBuf[MAX_TEXT_LENGTH]{};
 };
 
 enum STEvents {
@@ -45,7 +53,8 @@ enum STEvents {
   M_SAVE = 'save',
   M_SAVE_AS = 'svas',
   M_PRINT_SETUP = 'ptcf',
-  M_PRINT = 'prin'
+  M_PRINT = 'prin',
+  M_RUN = 'runb'
 };
 
 BTextView *createTextView(bool editable) {
@@ -92,9 +101,13 @@ MainWindow::MainWindow(void)
             .Add(new BScrollView("scrollview", fTextView, B_FOLLOW_ALL, 0, false, true), 1.0f)
             .Add(new BScrollView("scrollview", fConsoleView, B_FOLLOW_ALL, 0, false, true), 1.0f);
 
+  // FIXME: add a proper icon
+  BButton *runButton = new BButton("run", "Run file", new BMessage(M_RUN));
+
   // Build the final layout for the app window
   BLayoutBuilder::Group<>(this, B_VERTICAL)
       .Add(fMenuBar)
+      .Add(runButton)
       .Add(splitview)
       .SetInsets(0, 0, 0, 0)  // necessary for menu bar to stick to top of window
       .End();
@@ -134,6 +147,9 @@ MainWindow::~MainWindow(void) {
   delete fOpenPanel;
   delete fSavePanel;
 }
+
+// TODO: connect stub to actual evaluator
+auto evaluate(std::string_view &contents) -> std::string { return std::string(contents); }
 
 void MainWindow::MessageReceived(BMessage *msg) {
   switch (msg->what) {
@@ -180,6 +196,30 @@ void MainWindow::MessageReceived(BMessage *msg) {
         path.Append(name);
         SaveFile(path.Path());
       }
+      break;
+    }
+
+    case M_RUN: {
+      // TODO: make a "run selection" button
+      // TODO: make visible to user max text size (maybe ulisp also has limits)
+      // TODO: block until previous evaluation is completed
+      fTextView->GetText(0, sizeof(fEvalBuf), fEvalBuf);
+      fEvalBuf[MAX_TEXT_LENGTH - 1] = 0;
+
+      std::string_view view(fEvalBuf);
+
+      std::string result = evaluate(view);
+      std::cout << evaluate(view) << std::endl;
+
+      std::string separator{};
+      separator += '\n';
+      separator += "--------------------------";
+      separator += '\n';
+
+      result.insert(0, separator);
+      fConsoleView->Insert(result.c_str());
+      fConsoleView->ScrollToOffset(fConsoleView->TextLength());
+
       break;
     }
 
