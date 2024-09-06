@@ -38,7 +38,7 @@ public:
   bool QuitRequested(void);
 
   void OpenFile(const entry_ref &ref);
-  void SaveFile(const char *path);
+  void SaveFile(const char *path, BTextView *text);
   void FrameResized(float w, float h);
 
 private:
@@ -51,6 +51,7 @@ private:
   char fEvalBuf[MAX_TEXT_LENGTH]{};
   LispTarget *fTarget;
   LinuxSerialPort *fSerial;
+  bool savingOutput{};
 };
 
 enum STEvents {
@@ -58,6 +59,7 @@ enum STEvents {
   M_SHOW_OPEN = 'shop',
   M_SAVE = 'save',
   M_SAVE_AS = 'svas',
+  M_SAVE_OUTPUT = 'svot',
   M_RUN = 'runb'
 };
 
@@ -89,12 +91,15 @@ MainWindow::MainWindow(void)
   // Use the standard haiku hotkeys (Alt+[key]).
   menu->AddItem(new BMenuItem("New", new BMessage(M_FILE_NEW), 'N'));
   menu->AddItem(new BMenuItem("Open", new BMessage(M_SHOW_OPEN), 'O'));
+
   menu->AddSeparatorItem();
   menu->AddItem(new BMenuItem("Save", new BMessage(M_SAVE), 'S'));
-
   // This one uses Alt + Shift
   menu->AddItem(new BMenuItem("Save As" B_UTF8_ELLIPSIS, new BMessage(M_SAVE_AS), 'S',
                               B_COMMAND_KEY | B_SHIFT_KEY));
+
+  menu->AddSeparatorItem();
+  menu->AddItem(new BMenuItem("Save output", new BMessage(M_SAVE_OUTPUT), 'P'));
 
   // Add the text views and their scrollbars.
   fTextView = createTextView(true);
@@ -199,12 +204,19 @@ void MainWindow::MessageReceived(BMessage *msg) {
       if (fFilePath.CountChars() < 1) {
         fSavePanel->Show();
       } else {
-        SaveFile(fFilePath.String());
+        SaveFile(fFilePath.String(), fTextView);
       }
       break;
     }
 
     case M_SAVE_AS: {
+      fSavePanel->Show();
+      break;
+    }
+
+    case M_SAVE_OUTPUT: {
+      // ewww
+      savingOutput = true;
       fSavePanel->Show();
       break;
     }
@@ -215,8 +227,9 @@ void MainWindow::MessageReceived(BMessage *msg) {
       if (msg->FindRef("directory", &dir) == B_OK && msg->FindString("name", &name) == B_OK) {
         BPath path(&dir);
         path.Append(name);
-        SaveFile(path.Path());
+        SaveFile(path.Path(), savingOutput ? fConsoleView : fTextView);
       }
+      savingOutput = false;
       break;
     }
 
@@ -284,13 +297,13 @@ void MainWindow::OpenFile(const entry_ref &ref) {
   }
 }
 
-void MainWindow::SaveFile(const char *path) {
+void MainWindow::SaveFile(const char *path, BTextView *text) {
   // Take a string path and save the BTextView data to the file. File is either
   // created or overwritten.
   BFile file;
   if (file.SetTo(path, B_READ_WRITE | B_CREATE_FILE | B_ERASE_FILE) != B_OK) return;
 
-  if (BTranslationUtils::PutStyledText(fTextView, &file) == B_OK) {
+  if (BTranslationUtils::PutStyledText(text, &file) == B_OK) {
     fFilePath = path;
     BNodeInfo nodeInfo(&file);
     nodeInfo.SetType("text/plain");
