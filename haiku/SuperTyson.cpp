@@ -4,6 +4,8 @@
 #include <Entry.h>
 #include <File.h>
 #include <FilePanel.h>
+#include <Layout.h>
+#include <LayoutBuilder.h>
 #include <Menu.h>
 #include <MenuBar.h>
 #include <MenuItem.h>
@@ -11,6 +13,7 @@
 #include <NodeInfo.h>
 #include <Path.h>
 #include <ScrollView.h>
+#include <SplitView.h>
 #include <String.h>
 #include <TextView.h>
 #include <TranslationUtils.h>
@@ -31,7 +34,7 @@ private:
   void UpdateTextRect(void);
 
   BMenuBar *fMenuBar;
-  BTextView *fTextView;
+  BTextView *fTextView, *fConsoleView;
   BFilePanel *fOpenPanel, *fSavePanel;
   BString fFilePath;
 };
@@ -45,14 +48,26 @@ enum STEvents {
   M_PRINT = 'prin'
 };
 
+BTextView *createTextView(bool editable) {
+  BRect frame(0, 0, 200, 100);
+  auto textview = new BTextView(frame, "textview", frame.OffsetToCopy(0, 0), B_FOLLOW_ALL_SIDES,
+                                B_WILL_DRAW | B_FRAME_EVENTS);
+
+  textview->SetStylable(false);
+  textview->MakeEditable(editable);
+  textview->SetAutoindent(true);
+
+  return textview;
+}
+
 MainWindow::MainWindow(void)
-    : BWindow(BRect(100, 100, 300, 200), "SuperTyson", B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
+    : BWindow(BRect(100, 100, 500, 500), "SuperTyson", B_TITLED_WINDOW,
+              B_AUTO_UPDATE_SIZE_LIMITS | B_ASYNCHRONOUS_CONTROLS) {
   // Create and populate menu bar
   BRect r(Bounds());
   r.bottom = 20;
 
   fMenuBar = new BMenuBar(r, "menubar");
-  AddChild(fMenuBar);
 
   BMenu *menu = new BMenu("File");
   fMenuBar->AddItem(menu);
@@ -68,28 +83,21 @@ MainWindow::MainWindow(void)
   menu->AddItem(new BMenuItem("Save As" B_UTF8_ELLIPSIS, new BMessage(M_SAVE_AS), 'S',
                               B_COMMAND_KEY | B_SHIFT_KEY));
 
-  // Add the text view and its scrollbars.
-  //
-  // To use BScrollView, we need to create its target first, and then call
-  // AddChild for the BScrollView only.
-  r = Bounds();
-  r.top = fMenuBar->Frame().bottom + 1;
+  // Add the text views and their scrollbars.
+  fTextView = createTextView(true);
+  fConsoleView = createTextView(false);
 
-  // Compensate for the space taken up by the scrollbars.
-  r.right -= B_V_SCROLL_BAR_WIDTH;
+  BSplitView *splitview
+      = BLayoutBuilder::Split<>(B_HORIZONTAL)
+            .Add(new BScrollView("scrollview", fTextView, B_FOLLOW_ALL, 0, false, true), 1.0f)
+            .Add(new BScrollView("scrollview", fConsoleView, B_FOLLOW_ALL, 0, false, true), 1.0f);
 
-  // BTextView expects a frame size and a rectangle for the text area. In
-  // effect, that sets the margins.
-  BRect textRect = r;
-  textRect.OffsetTo(0, 0);
-  textRect.InsetBy(5, 5);
-  fTextView = new BTextView(r, "textview", textRect, B_FOLLOW_ALL);
-
-  // Do not make the text stylable (italics, etc)
-  fTextView->SetStylable(false);
-
-  BScrollView *scrollView = new BScrollView("scrollview", fTextView, B_FOLLOW_ALL, 0, false, true);
-  AddChild(scrollView);
+  // Build the final layout for the app window
+  BLayoutBuilder::Group<>(this, B_VERTICAL)
+      .Add(fMenuBar)
+      .Add(splitview)
+      .SetInsets(0, 0, 0, 0)  // necessary for menu bar to stick to top of window
+      .End();
 
   // BFilePanel shows the file pickers. Once constructed, call the Show() method
   // to enable the use to choose a file.
@@ -110,6 +118,15 @@ MainWindow::MainWindow(void)
 
   // Focus the text view on application start.
   fTextView->MakeFocus(true);
+
+  // Calculate minimum size
+  BSize minSize = GetLayout()->MinSize();
+
+  // Set minimum size constraints
+  SetSizeLimits(minSize.width, B_SIZE_UNSET, minSize.height, B_SIZE_UNSET);
+
+  // Adjust window size to fit content
+  ResizeToPreferred();
 }
 
 MainWindow::~MainWindow(void) {
