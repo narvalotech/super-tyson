@@ -4,6 +4,7 @@
 #include <st/serial.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/select.h>
 
 #include <cstring>
 #include <string>
