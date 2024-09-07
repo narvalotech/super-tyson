@@ -88,22 +88,26 @@ MainWindow::MainWindow(void)
 
   fMenuBar = new BMenuBar(r, "menubar");
 
-  BMenu *menu = new BMenu("File");
-  fMenuBar->AddItem(menu);
+  BMenu *fileMenu = new BMenu("File");
+  fMenuBar->AddItem(fileMenu);
 
-  // Use shorthand way to add items to menu.
   // Use the standard haiku hotkeys (Alt+[key]).
-  menu->AddItem(new BMenuItem("New", new BMessage(M_FILE_NEW), 'N'));
-  menu->AddItem(new BMenuItem("Open", new BMessage(M_SHOW_OPEN), 'O'));
+  fileMenu->AddItem(new BMenuItem("New", new BMessage(M_FILE_NEW), 'N'));
+  fileMenu->AddItem(new BMenuItem("Open", new BMessage(M_SHOW_OPEN), 'O'));
 
-  menu->AddSeparatorItem();
-  menu->AddItem(new BMenuItem("Save", new BMessage(M_SAVE), 'S'));
-  // This one uses Alt + Shift
-  menu->AddItem(new BMenuItem("Save As" B_UTF8_ELLIPSIS, new BMessage(M_SAVE_AS), 'S',
-                              B_COMMAND_KEY | B_SHIFT_KEY));
+  fileMenu->AddSeparatorItem();
+  fileMenu->AddItem(new BMenuItem("Save", new BMessage(M_SAVE), 'S'));
+  // This one uses Alt + Shift, we need to specify the modifiers as extra parameter
+  fileMenu->AddItem(new BMenuItem("Save As" B_UTF8_ELLIPSIS, new BMessage(M_SAVE_AS), 'S',
+                                  B_COMMAND_KEY | B_SHIFT_KEY));
 
-  menu->AddSeparatorItem();
-  menu->AddItem(new BMenuItem("Save output", new BMessage(M_SAVE_OUTPUT), 'P'));
+  fileMenu->AddSeparatorItem();
+  fileMenu->AddItem(new BMenuItem("Save output", new BMessage(M_SAVE_OUTPUT), 'P'));
+
+  BMenu *targetMenu = new BMenu("Target");
+  fMenuBar->AddItem(targetMenu);
+  targetMenu->AddItem(new BMenuItem("Evaluate file", new BMessage(M_RUN), 'R'));
+  targetMenu->AddItem(new BMenuItem("Evaluate selection", new BMessage(M_RUN_SEL), 'E'));
 
   // Add the text views and their scrollbars.
   fTextView = createTextView(true);
