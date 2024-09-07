@@ -117,4 +117,8 @@ auto LinuxSerialPort::_init(const char* device_path, unsigned int baud_rate, boo
   if (tcsetattr(fd, TCSANOW, &tty) != 0) {
     throw std::runtime_error("Failed to set terminal attributes");
   }
+
+  if (tcflush(fd, TCIFLUSH) != 0) {
+    throw std::runtime_error("Failed to flush serial buffer");
+  }
 }
