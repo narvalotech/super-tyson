@@ -23,6 +23,7 @@
 #include <st/sexp.h>
 #include <st/target.h>
 
+#include <cassert>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -43,6 +44,7 @@ public:
 
 private:
   void UpdateTextRect(void);
+  void EvaluateAndPrint(const char *buf, std::size_t size);
 
   BMenuBar *fMenuBar;
   BTextView *fTextView, *fConsoleView;
@@ -61,6 +63,7 @@ enum STEvents {
   M_SAVE_AS = 'svas',
   M_SAVE_OUTPUT = 'svot',
   M_CONNECT = 'conn',
+  M_RUN_SEL = 'runs',
   M_RUN = 'runb'
 };
 
@@ -113,8 +116,10 @@ MainWindow::MainWindow(void)
 
   // TODO: add a proper icon
   BButton *runButton = new BButton("run", "Run file", new BMessage(M_RUN));
+  BButton *runSelButton = new BButton("run_sel", "Run selection", new BMessage(M_RUN_SEL));
   BButton *connectButton = new BButton("connect", "Connect serial port", new BMessage(M_CONNECT));
-  BGroupLayout *buttons = BLayoutBuilder::Group<>(B_HORIZONTAL).Add(runButton).Add(connectButton);
+  BGroupLayout *buttons
+      = BLayoutBuilder::Group<>(B_HORIZONTAL).Add(runButton).Add(runSelButton).Add(connectButton);
 
   // Build the final layout for the app window
   BLayoutBuilder::Group<>(this, B_VERTICAL)
@@ -178,6 +183,31 @@ auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
   // is >> exp;
 
   return target->evaluate(copy);
+}
+
+void MainWindow::EvaluateAndPrint(const char *buf, std::size_t size) {
+  // TODO: make visible to user max text size (maybe ulisp also has limits)
+  // TODO: block until previous evaluation is completed
+  fEvalBuf[MAX_TEXT_LENGTH - 1] = 0;
+
+  std::string_view view(fEvalBuf);
+
+  std::string result = evaluate(view, fTarget);
+  std::cout << result << std::endl;
+
+  std::string separator{};
+  separator += '\n';
+  separator += "--------------------------";
+  separator += '\n';
+  // TODO: better name for this var
+  // TODO: add option to enable/disable echo
+  separator += fEvalBuf;
+  separator += '\n';
+  separator += "=> ";
+
+  result.insert(0, separator);
+  fConsoleView->Insert(result.c_str());
+  fConsoleView->ScrollToOffset(fConsoleView->TextLength());
 }
 
 void MainWindow::MessageReceived(BMessage *msg) {
@@ -256,31 +286,19 @@ void MainWindow::MessageReceived(BMessage *msg) {
     }
 
     case M_RUN: {
-      // TODO: make a "run selection" button
-      // TODO: make visible to user max text size (maybe ulisp also has limits)
-      // TODO: block until previous evaluation is completed
       fTextView->GetText(0, sizeof(fEvalBuf), fEvalBuf);
-      fEvalBuf[MAX_TEXT_LENGTH - 1] = 0;
+      EvaluateAndPrint(fEvalBuf, sizeof(fEvalBuf));
+      break;
+    }
 
-      std::string_view view(fEvalBuf);
+    case M_RUN_SEL: {
+      int32 start, end, len;
+      fTextView->GetSelection(&start, &end);
+      len = end - start;
 
-      std::string result = evaluate(view, fTarget);
-      std::cout << result << std::endl;
-
-      std::string separator{};
-      separator += '\n';
-      separator += "--------------------------";
-      separator += '\n';
-      // TODO: better name for this var
-      // TODO: add option to enable/disable echo
-      separator += fEvalBuf;
-      separator += '\n';
-      separator += "=> ";
-
-      result.insert(0, separator);
-      fConsoleView->Insert(result.c_str());
-      fConsoleView->ScrollToOffset(fConsoleView->TextLength());
-
+      assert(len <= sizeof(fEvalBuf));
+      fTextView->GetText(start, len, fEvalBuf);
+      EvaluateAndPrint(fEvalBuf, sizeof(fEvalBuf));
       break;
     }
 
