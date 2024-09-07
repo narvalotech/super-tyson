@@ -8,7 +8,7 @@ auto operator>>(std::istream& stream, Sexp& obj) -> std::istream& {
 
   char c = 0;
   auto nesting{0};
-  std::string exp;
+  std::string exp {};
 
   stream >> std::noskipws;  // Don't skip whitespace
 
@@ -16,28 +16,33 @@ auto operator>>(std::istream& stream, Sexp& obj) -> std::istream& {
     // Wait until the S-exp starts
   }
 
-  if (c == '(') {
-    nesting = 1;  // begin s-expression
+  if (c != '(') {
+    stream.setstate(std::ios_base::failbit);
+    obj.exp = {};
+
+    return stream;
+  }
+
+  nesting = 1;  // begin s-expression
+  exp += c;
+
+  // consume chars, taking into account the level of () nesting.
+  while (stream >> c && nesting != 0) {
     exp += c;
 
-    // consume chars, taking into account the level of () nesting.
-    while (stream >> c && nesting != 0) {
-      exp += c;
-
-      switch (c) {
-        case '(':
-          nesting++;
-          break;
-        case ')':
-          nesting--;
-          break;
-      }
+    switch (c) {
+      case '(':
+        nesting++;
+        break;
+      case ')':
+        nesting--;
+        break;
     }
-    std::cerr << "Success" << std::endl;
+  }
+
+  if (nesting == 0) {
     stream.clear();           // Clear stream state (eg failbit)
   } else {
-    std::cerr << "Fail" << std::endl;
-    // TODO: return failure properly
     stream.setstate(std::ios_base::failbit);
   }
 
