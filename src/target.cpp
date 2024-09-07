@@ -77,14 +77,22 @@ auto no_trail_whitespace(std::string& str) -> std::string_view {
   return view;
 }
 
-auto is_prompt(std::string line) -> bool { return (no_trail_whitespace(line).back() == '>'); }
+auto is_prompt(std::string line) -> bool {
+  std::string_view notrail = no_trail_whitespace(line);
+
+  if (notrail.size() == 0) {
+    return false;
+  }
+
+  return notrail.back() == '>';
+}
 
 template <typename F> auto read_result(F read_line) -> std::string {
   // Read the result of the computation, until the lisp prompt
   // We can optionally track the memory consumption from the prompt
   char c;
   std::string result;
-  std::string line;
+  std::string line {};
 
   while (read_line(line) && !is_prompt(line)) {
     // do we need to give up after some time? e.g. if s-exp is bad, the prompt
