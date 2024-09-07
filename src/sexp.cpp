@@ -6,13 +6,17 @@ auto operator<<(std::ostream& os, const Sexp& obj) -> std::ostream& { return os 
 auto operator>>(std::istream& stream, Sexp& obj) -> std::istream& {
   // TODO: allow (and strip+keep) inline comments
 
-  char c;
+  char c = 0;
   auto nesting{0};
   std::string exp;
 
   stream >> std::noskipws;  // Don't skip whitespace
 
-  if (stream >> c && c == '(') {
+  while (stream >> c && c != '(') {
+    // Wait until the S-exp starts
+  }
+
+  if (c == '(') {
     nesting = 1;  // begin s-expression
     exp += c;
 
