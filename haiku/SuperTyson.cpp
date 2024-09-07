@@ -113,6 +113,8 @@ MainWindow::MainWindow(void)
   fTextView = createTextView(true);
   fConsoleView = createTextView(false);
 
+  fTextView->SetText("(format nil \"hello world\")");
+
   BSplitView *splitview
       = BLayoutBuilder::Split<>(B_HORIZONTAL)
             .Add(new BScrollView("scrollview", fTextView, B_FOLLOW_ALL, 0, false, true), 1.0f)
