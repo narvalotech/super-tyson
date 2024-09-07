@@ -33,7 +33,13 @@ auto serial_read_line(SerialPort& serial, std::string& line) -> bool {
       continue;
     }
 
+    if (c == '\r') {
+      LOGN("got [CR]");
+      continue;
+    }
+
     if (c == '\n') {
+      LOGN("got [LF]");
       break;
     }
 
