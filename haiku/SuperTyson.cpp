@@ -171,7 +171,6 @@ MainWindow::~MainWindow(void) {
   delete fSavePanel;
 }
 
-// TODO: connect stub to actual evaluator
 auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
   // Welp, that's ugly AF
   std::string copy(contents);
@@ -189,7 +188,7 @@ auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
 
 void MainWindow::EvaluateAndPrint(const char *buf, std::size_t size) {
   // TODO: make visible to user max text size (maybe ulisp also has limits)
-  // TODO: block until previous evaluation is completed
+  // TODO: add evaluator queue + thread
   fEvalBuf[MAX_TEXT_LENGTH - 1] = 0;
 
   std::string_view view(fEvalBuf);
