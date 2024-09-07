@@ -182,6 +182,9 @@ auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
   std::stringstream is(copy);
   Sexp exp;
   is >> exp;
+  if (is.fail()) {
+    return "Not a valid s-expression";
+  }
 
   return target->evaluate(exp.get());
 }

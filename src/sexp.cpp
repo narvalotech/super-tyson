@@ -33,11 +33,15 @@ auto operator>>(std::istream& stream, Sexp& obj) -> std::istream& {
           break;
       }
     }
+    std::cerr << "Success" << std::endl;
+    stream.clear();           // Clear stream state (eg failbit)
   } else {
+    std::cerr << "Fail" << std::endl;
     // TODO: return failure properly
     stream.setstate(std::ios_base::failbit);
   }
 
+  // This will be empty in case of failure
   obj.exp = exp;
 
   return stream;
