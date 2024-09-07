@@ -23,10 +23,20 @@ newlines"
 --- exit ---
 ```
 
+# notes on GUI
+
+Resizing in the X direction doesn't work.
+
+Weirdly enough, the window is resizable in both direction when no buttons are
+added to the layout. It's probably something to do with the button element
+itself adding a maxsize constraint.
+
 # next steps
 
 GUI
 
+- fix resizing issue (see above)
+- add connection status indicator (statusline maybe?)
 - add serial port selector widget
 - add "Run selection" button
 - highlight matching parens
