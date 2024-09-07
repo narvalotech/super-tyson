@@ -35,9 +35,8 @@ itself adding a maxsize constraint.
 
 GUI
 
+- allow evaluating entire buffer instead of just first s-exp
 - fix resizing issue (see above)
 - add connection status indicator (statusline maybe?)
 - add serial port selector widget
-- add "Run selection" button
 - highlight matching parens
-- allow evaluating more than 1 s-exp
