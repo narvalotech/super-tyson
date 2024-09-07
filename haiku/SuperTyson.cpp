@@ -180,13 +180,11 @@ auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
     return "not connected to board.";
   }
 
-  // FIXME: we should be able to evaluate not only s-exps, ie printing literals
-  // or variable values.
-  // std::stringstream is(copy);
-  // Sexp exp;
-  // is >> exp;
+  std::stringstream is(copy);
+  Sexp exp;
+  is >> exp;
 
-  return target->evaluate(copy);
+  return target->evaluate(exp.get());
 }
 
 void MainWindow::EvaluateAndPrint(const char *buf, std::size_t size) {
