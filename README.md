@@ -3,7 +3,7 @@
 The repo is used for "working in public".
 The project itself is not yet usable, but feel free to browse the oft-changing code.
 
-I will remove this disclaimer when the GUI MVP milestone (below) is done.
+I will remove this disclaimer when the GUI MVP milestone (see `scratchpad.md`) is done.
 
 # What
 
@@ -29,31 +29,3 @@ ninja -C build
 ./build/SuperTyson
 ```
 
-# Plan
-
-## CLI MVP
-
-- [x] connect to device
-- [x] evaluate s-exp
-- [x] evaluate "region" (ie multiple s-exp)
-- [x] evaluate file
-
-## GUI MVP
-
-GUI should be pluggable, as to have multiple backends.
-
-Use a "server" architecture, where the server connects to the target and does
-the comms and parsing. GUI should just present the data.
-
-- [ ] serial connection dialog / bar
-- [x] editor window
-- [x] REPL window/terminal
-- [x] send editor contents button
-
-## Extra features
-
-- [ ] save/restore memory to disk
-- [ ] show all lambdas and variables
-- [ ] "scratchpad" text area
-- [ ] editor tabs
-- [ ] wifi REPL
