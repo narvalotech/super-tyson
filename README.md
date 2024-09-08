@@ -9,6 +9,8 @@ I will remove this disclaimer when the GUI MVP milestone (below) is done.
 
 Super-Tyson (ST) is a micro-ide for [micro lisp](http://www.ulisp.com/).
 
+![Editor screenshot](super-tyson.png)
+
 # Why
 
 Needed a project to learn me some C++.
