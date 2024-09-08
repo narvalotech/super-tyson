@@ -41,6 +41,7 @@ auto operator>>(std::istream& stream, Sexp& obj) -> std::istream& {
   }
 
   if (nesting == 0) {
+    std::cerr << "read: " << exp << std::endl;
     stream.clear();           // Clear stream state (eg failbit)
   } else {
     stream.setstate(std::ios_base::failbit);
