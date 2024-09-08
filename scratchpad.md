@@ -35,7 +35,6 @@ itself adding a maxsize constraint.
 
 GUI
 
-- allow evaluating entire buffer instead of just first s-exp
 - fix resizing issue (see above)
 - add connection status indicator (statusline maybe?)
 - add serial port selector widget

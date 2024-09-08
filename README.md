@@ -33,8 +33,8 @@ ninja -C build
 
 - [x] connect to device
 - [x] evaluate s-exp
-- [ ] evaluate "region" (ie multiple s-exp)
-- [ ] evaluate file
+- [x] evaluate "region" (ie multiple s-exp)
+- [x] evaluate file
 
 ## GUI MVP
 
