@@ -1,4 +1,6 @@
+#include <st/log.h>
 #include <st/sexp.h>
+
 #include <iostream>
 
 auto operator<<(std::ostream& os, const Sexp& obj) -> std::ostream& { return os << obj.get(); }
@@ -41,7 +43,7 @@ auto operator>>(std::istream& stream, Sexp& obj) -> std::istream& {
   }
 
   if (nesting == 0) {
-    std::cerr << "read: " << exp << std::endl;
+    LOGN("read: " << exp);
     stream.clear();           // Clear stream state (eg failbit)
   } else {
     stream.setstate(std::ios_base::failbit);

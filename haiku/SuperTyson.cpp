@@ -193,7 +193,6 @@ void MainWindow::EvaluateAndPrint(const char *buf, std::size_t size) {
   std::stringstream is(input);
 
   while (is && (is.peek() != EOF)) {
-    std::cerr << "loop" << std::endl;
     Sexp exp;
     std::string result{};
 

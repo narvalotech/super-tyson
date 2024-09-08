@@ -1,4 +1,5 @@
 #include <st/linuxserial.h>
+#include <st/log.h>
 #include <st/sexp.h>
 #include <st/target.h>
 
@@ -9,8 +10,7 @@ auto main(int argc, char* argv[]) -> int {
   assert(argc == 2);
 
   std::string uart_path = argv[1];
-  std::cerr << "Path: " << uart_path << std::endl;
-  std::cerr.flush();
+  LOGN("Serial port: " << uart_path);
 
   // TODO: use argv[1] to select serial port type
   // TODO: pass serial params via cli too
@@ -20,12 +20,12 @@ auto main(int argc, char* argv[]) -> int {
   Sexp exp;
   std::cin >> exp;
 
-  std::cerr << "Eval: " << exp << std::endl;
+  LOGN("Eval: " << exp);
 
   // Send to lisp super-computer
   std::string result = target.evaluate(exp.get());
 
-  std::cerr << "Result: {" << result << "}";
+  LOGN("Result: {" << result << "}");
   std::cout << result;
 
   return 0;

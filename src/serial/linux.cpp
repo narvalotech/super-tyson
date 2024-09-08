@@ -1,16 +1,14 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <st/linuxserial.h>
+#include <st/log.h>
 #include <st/serial.h>
+#include <sys/select.h>
 #include <termios.h>
 #include <unistd.h>
-#include <sys/select.h>
 
 #include <cstring>
 #include <string>
-
-#define LOGN(str) std::cerr << str << std::endl
-#define LOG(str) std::cerr << str;
 
 auto LinuxSerialPort::send(const std::string_view view) -> int {
   send_c_str(view.data(), view.length());

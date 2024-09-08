@@ -1,3 +1,4 @@
+#include <st/log.h>
 #include <st/serial.h>
 #include <st/target.h>
 
@@ -5,9 +6,6 @@
 #include <iostream>
 #include <string>
 #include <thread>
-
-#define LOGN(str) std::cerr << str << std::endl
-#define LOG(str) std::cerr << str;
 
 auto disable_ulisp_echo(SerialPort& serial) -> void {
   // Works with a special build of ulisp, where auto re-enabling of echo is
