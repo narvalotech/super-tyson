@@ -27,5 +27,8 @@ ninja -C build
 
 # run
 ./build/SuperTyson
+
+# if on Haiku, run the graphical app
+./build/haiku/st
 ```
 
