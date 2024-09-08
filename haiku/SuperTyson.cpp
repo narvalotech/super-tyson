@@ -46,6 +46,7 @@ private:
   void UpdateTextRect(void);
   void EvaluateAndPrint(const char *buf, std::size_t size);
 
+  BButton *fConnectButton;
   BMenuBar *fMenuBar;
   BTextView *fTextView, *fConsoleView;
   BFilePanel *fOpenPanel, *fSavePanel;
@@ -123,9 +124,9 @@ MainWindow::MainWindow(void)
   // TODO: add a proper icon
   BButton *runButton = new BButton("run", "Run file", new BMessage(M_RUN));
   BButton *runSelButton = new BButton("run_sel", "Run selection", new BMessage(M_RUN_SEL));
-  BButton *connectButton = new BButton("connect", "Connect serial port", new BMessage(M_CONNECT));
+  fConnectButton = new BButton("connect", "Connect serial port", new BMessage(M_CONNECT));
   BGroupLayout *buttons
-      = BLayoutBuilder::Group<>(B_HORIZONTAL).Add(runButton).Add(runSelButton).Add(connectButton);
+      = BLayoutBuilder::Group<>(B_HORIZONTAL).Add(runButton).Add(runSelButton).Add(fConnectButton);
 
   // Build the final layout for the app window
   BLayoutBuilder::Group<>(this, B_VERTICAL)
@@ -274,10 +275,13 @@ void MainWindow::MessageReceived(BMessage *msg) {
 
     case M_CONNECT: {
       if (fTarget != nullptr) {
-        // We are already connected. Destroy the current target connection
-        // before establishing a new one.
         delete fTarget;
+        fTarget = nullptr;
         delete fSerial;
+        fSerial = nullptr;
+
+        fConnectButton->SetLabel("Connect serial");
+        break;
       }
 
       // FIXME: allow user port/baud/fc selection
@@ -288,6 +292,7 @@ void MainWindow::MessageReceived(BMessage *msg) {
       LinuxSerialPort &serial = *fSerial;
       fTarget = new LispTarget(serial);
 
+      fConnectButton->SetLabel("Disconnect serial");
       break;
     }
 
