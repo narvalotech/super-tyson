@@ -173,47 +173,47 @@ MainWindow::~MainWindow(void) {
   delete fSavePanel;
 }
 
-auto evaluate(std::string_view &contents, LispTarget *target) -> std::string {
-  // Welp, that's ugly AF
-  std::string copy(contents);
-
-  if (target == nullptr) {
-    return "not connected to board.";
-  }
-
-  std::stringstream is(copy);
-  Sexp exp;
-  is >> exp;
-  if (is.fail()) {
-    return "Not a valid s-expression";
-  }
-
-  return target->evaluate(exp.get());
-}
-
 void MainWindow::EvaluateAndPrint(const char *buf, std::size_t size) {
   // TODO: make visible to user max text size (maybe ulisp also has limits)
   // TODO: add evaluator queue + thread
   fEvalBuf[MAX_TEXT_LENGTH - 1] = 0;
 
-  std::string_view view(fEvalBuf);
-
-  std::string result = evaluate(view, fTarget);
-  std::cout << result << std::endl;
-
+  // TODO: better name for this var
+  // TODO: add option to enable/disable echo
   std::string separator{};
   separator += '\n';
   separator += "--------------------------";
   separator += '\n';
-  // TODO: better name for this var
-  // TODO: add option to enable/disable echo
-  separator += fEvalBuf;
-  separator += '\n';
-  separator += "=> ";
 
-  result.insert(0, separator);
-  fConsoleView->Insert(result.c_str());
-  fConsoleView->ScrollToOffset(fConsoleView->TextLength());
+  fConsoleView->Insert(separator.c_str());
+  fConsoleView->Insert(fEvalBuf);
+
+  std::string input(fEvalBuf);
+  std::stringstream is(input);
+
+  while (is && (is.peek() != EOF)) {
+    std::cerr << "loop" << std::endl;
+    Sexp exp;
+    std::string result{};
+
+    is >> exp;
+
+    if (fTarget == nullptr) {
+      result = "Not connected to board.";
+    } else if (is.fail()) {
+      result = "Not a valid s-expression.";
+    } else {
+      result = fTarget->evaluate(exp.get());
+    }
+
+    std::string prompt{};
+    prompt += '\n';
+    prompt += "=> ";
+    result.insert(0, prompt);
+
+    fConsoleView->Insert(result.c_str());
+    fConsoleView->ScrollToOffset(fConsoleView->TextLength());
+  }
 }
 
 void MainWindow::MessageReceived(BMessage *msg) {
